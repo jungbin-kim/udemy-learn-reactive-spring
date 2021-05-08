@@ -2,6 +2,7 @@ package com.learnreactivespring.fluxandmonoplayground;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 
 public class FluxAndMonoTest {
 
@@ -16,6 +17,48 @@ public class FluxAndMonoTest {
     stringFlux.subscribe(System.out::println,
         e -> System.err.println("Exception is " + e),
         () -> System.out.println("Completed"));
+  }
+
+  @Test
+  public void fluxTestElements_WithoutError() {
+    Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+        .log();
+
+    StepVerifier.create(stringFlux)
+        .expectNext("Spring")
+        .expectNext("Spring Boot")
+        .expectNext("Reactive Spring")
+        // verify compete = expect complete + subscribe
+        .verifyComplete();
+  }
+
+  @Test
+  public void fluxTestElements_WithError() {
+    Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+        .concatWith(Flux.error(new RuntimeException("Exception Occurred")))
+        .log();
+
+    StepVerifier.create(stringFlux)
+        //.expectNext("Spring", "Spring Boot", "Reactive Spring")
+        .expectNext("Spring")
+        .expectNext("Spring Boot")
+        .expectNext("Reactive Spring")
+        // Compare Error class
+        //.expectError(RuntimeException.class)
+        .expectErrorMessage("Exception Occurred")
+        .verify();
+  }
+
+  @Test
+  public void fluxTestElementsCount_WithError() {
+    Flux<String> stringFlux = Flux.just("Spring", "Spring Boot", "Reactive Spring")
+        .concatWith(Flux.error(new RuntimeException("Exception Occurred")))
+        .log();
+
+    StepVerifier.create(stringFlux)
+        .expectNextCount(3)
+        .expectErrorMessage("Exception Occurred")
+        .verify();
   }
 
 }
