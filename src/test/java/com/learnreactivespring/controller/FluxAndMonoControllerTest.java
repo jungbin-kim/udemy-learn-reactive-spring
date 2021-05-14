@@ -17,6 +17,12 @@ import reactor.test.StepVerifier;
 
 @RunWith(SpringRunner.class)
 @WebFluxTest
+/*
+* @WebFluxTest 어노테이션을 사용하면 전체 자동 구성이 비활성화되고 대신 WebFlux 테스트와 관련된 구성만 적용됩니다
+* (예 : @Controller, @ControllerAdvice, @JsonComponent, Converter / GenericConverter 및 WebFluxConfigurer 빈)
+* (제외 예: @Component, @Service 또는 @Repository 빈)
+* JUnit4에서는 @RunWith(SpringRunner.class) 와 함께 사용해야한다.
+* */
 public class FluxAndMonoControllerTest {
 
   @Autowired
