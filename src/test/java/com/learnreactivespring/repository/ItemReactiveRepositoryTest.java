@@ -24,7 +24,9 @@ public class ItemReactiveRepositoryTest {
       new Item(null, "Samsung TV", 400.0),
       new Item(null, "LG TV", 420.0),
       new Item(null, "Apple Watch", 299.99),
-      new Item(null, "Beats Headphones", 149.99)
+      new Item(null, "Beats Headphones", 149.99),
+      new Item("ABC", "Bose Headphones", 149.99)
+
   );
 
   @Before
@@ -42,7 +44,15 @@ public class ItemReactiveRepositoryTest {
   public void getAllItems() {
     StepVerifier.create(itemReactiveRepository.findAll())
         .expectSubscription()
-        .expectNextCount(4)
+        .expectNextCount(itemList.size())
+        .verifyComplete();
+  }
+
+  @Test
+  public void getItemById() {
+    StepVerifier.create(itemReactiveRepository.findById("ABC"))
+        .expectSubscription()
+        .expectNextMatches((item -> item.getDescription().equals("Bose Headphones")))
         .verifyComplete();
   }
 
