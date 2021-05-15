@@ -19,6 +19,7 @@ import reactor.test.StepVerifier;
 /*
 @DirtiesContext: 테스트를 수행하기 전, 후, 각 테스트 케이스 수행 전, 후 context를 다시 생성하도록 함
 강의에서는 @DirtiesContext 어노테이션을 해야 통과되는데, 버전이 달라서 그런지 안해도 된다.
+Spring 5.3 부터 기본 적용
  */
 //@DirtiesContext
 public class ItemReactiveRepositoryTest {
