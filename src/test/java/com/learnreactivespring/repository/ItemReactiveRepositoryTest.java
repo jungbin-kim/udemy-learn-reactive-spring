@@ -85,7 +85,7 @@ public class ItemReactiveRepositoryTest {
   @Test
   public void updateItem() {
     double newPrice = 520.00;
-    Flux<Item> updatedItem = itemReactiveRepository.findByDescription("LG TV")
+    Mono<Item> updatedItem = itemReactiveRepository.findByDescription("LG TV")
         .map(item -> {
           item.setPrice(newPrice); // Setting the new price
           return item;
@@ -98,4 +98,36 @@ public class ItemReactiveRepositoryTest {
         .verifyComplete();
   }
 
+  @Test
+  public void deleteItemById() {
+    Mono<Void> deletedItem = itemReactiveRepository.findById("ABC") // Mono<Item>
+        .map(Item::getId) // get Id -> map을 사용해서 type 변경
+        .flatMap(id -> {
+          return itemReactiveRepository.deleteById(id);
+        });
+
+    StepVerifier.create(deletedItem.log())
+        .expectSubscription()
+        .verifyComplete();
+
+    StepVerifier.create(itemReactiveRepository.findAll().log("The enw Item List : "))
+        .expectNextCount(itemList.size() - 1)
+        .verifyComplete();
+  }
+
+  @Test
+  public void deleteItem() {
+    Mono<Void> deletedItem = itemReactiveRepository.findByDescription("LG TV") // Mono<Item>
+        .flatMap(item -> {
+          return itemReactiveRepository.delete(item);
+        });
+
+    StepVerifier.create(deletedItem.log())
+        .expectSubscription()
+        .verifyComplete();
+
+    StepVerifier.create(itemReactiveRepository.findAll().log("The enw Item List : "))
+        .expectNextCount(itemList.size() - 1)
+        .verifyComplete();
+  }
 }
