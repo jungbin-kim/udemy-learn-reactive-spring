@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,13 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 public class ItemController {
+
+  // 현재는 컨트롤러마다 달아줘야한다.
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+    log.error("Exception caught in handleRuntimeException : {} ", ex);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+  }
 
   @Autowired
   ItemReactiveRepository itemReactiveRepository;
@@ -62,6 +70,12 @@ public class ItemController {
         })
         .map(updateItem -> new ResponseEntity<>(updateItem, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  }
+
+  @GetMapping(ITEM_END_POINT_V1 + "/runtimeException")
+  public Flux<Item> runtimeException() {
+    return itemReactiveRepository.findAll()
+        .concatWith(Mono.error(new RuntimeException("RuntimeException Occurred.")));
   }
 
 }
