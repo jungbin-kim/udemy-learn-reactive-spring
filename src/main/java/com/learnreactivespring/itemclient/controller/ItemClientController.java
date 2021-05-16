@@ -2,6 +2,7 @@ package com.learnreactivespring.itemclient.controller;
 
 import com.learnreactivespring.itemclient.domain.Item;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,5 +78,13 @@ public class ItemClientController {
         .retrieve()
         .bodyToMono(Item.class)
         .log("Updated Item is : ");
+  }
+
+  @DeleteMapping("/client/deleteItem/{id}")
+  public Mono<Void> deleteItem(@PathVariable String id) {
+    return webClient.delete().uri("/v1/items/{id}", id)
+        .retrieve()
+        .bodyToMono(Void.class)
+        .log("Deleted Item is");
   }
 }
