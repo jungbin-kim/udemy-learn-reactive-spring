@@ -2,9 +2,12 @@ package com.learnreactivespring.initialize;
 
 import com.learnreactivespring.document.Item;
 import com.learnreactivespring.document.ItemCapped;
+import com.learnreactivespring.repository.ItemReactiveCappedRepository;
 import com.learnreactivespring.repository.ItemReactiveRepository;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -15,10 +18,14 @@ import reactor.core.publisher.Flux;
 
 @Component
 @Profile("!test")
+@Slf4j
 public class ItemDataInitializer implements CommandLineRunner {
 
   @Autowired
   ItemReactiveRepository itemReactiveRepository;
+
+  @Autowired
+  ItemReactiveCappedRepository itemReactiveCappedRepository;
 
   /*
   Change Bean name: MongoOperations => ReactiveMongoOperations
@@ -31,6 +38,7 @@ public class ItemDataInitializer implements CommandLineRunner {
   public void run(String... args) throws Exception {
     initialDataSetUp();
     createCappedCollection();
+    dataSetUpForCappedCollection();
   }
 
   private void createCappedCollection() {
@@ -48,6 +56,15 @@ public class ItemDataInitializer implements CommandLineRunner {
     );
   }
 
+  private void dataSetUpForCappedCollection() {
+    Flux<ItemCapped> itemCappedFlux = Flux.interval(Duration.ofSeconds(1))
+        .map(i -> new ItemCapped(null, "Random Item " + i, (100.00 + i)));
+    itemReactiveCappedRepository.insert(itemCappedFlux)
+        .subscribe(itemCapped -> {
+          log.info("Inserted Item is " + itemCapped);
+        });
+  }
+
   private void initialDataSetUp() {
     itemReactiveRepository.deleteAll()
         .thenMany(Flux.fromIterable(data()))
@@ -57,7 +74,6 @@ public class ItemDataInitializer implements CommandLineRunner {
           System.out.println("Item inserted from CommandLineRunner : " + item);
         }))
     ;
-
   }
 
 
