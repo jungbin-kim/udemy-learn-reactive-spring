@@ -18,4 +18,7 @@ curl -d '{"id":null, "description": "Beats Headphones", "price": 14.99}' -H "Con
 
 # DELETE
 curl -X DELETE http://localhost:8081/client/deleteItem/ABC
+
+# Error
+curl http://localhost:8081/client/retrieve/error
 ```
