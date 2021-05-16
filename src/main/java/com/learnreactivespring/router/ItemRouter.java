@@ -17,10 +17,13 @@ public class ItemRouter {
 
   @Bean
   public RouterFunction<ServerResponse> itemsRoute(ItemHandler itemHandler) {
-    return RouterFunctions.route(
-        GET(ITEM_FUNCTIONAL_END_POINT_V1)
-            .and(accept(MediaType.APPLICATION_JSON)),
-        itemHandler::getAllItems);
+    return RouterFunctions
+        .route(
+            GET(ITEM_FUNCTIONAL_END_POINT_V1).and(accept(MediaType.APPLICATION_JSON)),
+            itemHandler::getAllItems)
+        .andRoute(
+            GET(ITEM_FUNCTIONAL_END_POINT_V1 + "/{id}").and(accept(MediaType.APPLICATION_JSON)),
+            itemHandler::getOneItem);
   }
 
 }

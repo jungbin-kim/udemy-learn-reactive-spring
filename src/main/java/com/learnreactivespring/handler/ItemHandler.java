@@ -1,5 +1,7 @@
 package com.learnreactivespring.handler;
 
+import static org.springframework.web.reactive.function.BodyInserters.fromObject;
+
 import com.learnreactivespring.document.Item;
 import com.learnreactivespring.repository.ItemReactiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,22 @@ public class ItemHandler {
   @Autowired
   ItemReactiveRepository itemReactiveRepository;
 
+  static Mono<ServerResponse> notFound = ServerResponse.notFound().build();
+
   public Mono<ServerResponse> getAllItems(ServerRequest serverRequest) {
     return ServerResponse.ok()
         .contentType(MediaType.APPLICATION_JSON)
         .body(itemReactiveRepository.findAll(), Item.class);
+  }
+
+  public Mono<ServerResponse> getOneItem(ServerRequest serverRequest) {
+    String id = serverRequest.pathVariable("id");
+    Mono<Item> itemMono = itemReactiveRepository.findById(id);
+    return itemMono.flatMap(item -> ServerResponse.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+//        .body(fromObject(item))
+            .bodyValue(item)
+    ).switchIfEmpty(notFound);
   }
 
 }
