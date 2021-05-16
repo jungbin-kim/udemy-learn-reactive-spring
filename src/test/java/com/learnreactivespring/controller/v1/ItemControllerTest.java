@@ -1,4 +1,4 @@
-package com.learnreactivespring.controller;
+package com.learnreactivespring.controller.v1;
 
 import static org.junit.Assert.assertTrue;
 
@@ -162,5 +162,14 @@ public class ItemControllerTest {
         .body(Mono.just(item), Item.class)
         .exchange()
         .expectStatus().isNotFound();
+  }
+
+  @Test
+  public void runTimeException() {
+    webTestClient.get().uri(ItemConstants.ITEM_END_POINT_V1.concat("/runtimeException"))
+        .exchange()
+        .expectStatus().is5xxServerError()
+        .expectBody(String.class)
+        .isEqualTo("RuntimeException Occurred.");
   }
 }
