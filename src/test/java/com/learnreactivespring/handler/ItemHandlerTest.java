@@ -163,4 +163,16 @@ public class ItemHandlerTest {
         .expectStatus().isNotFound();
   }
 
+  @Test
+  public void runTimeException() {
+    webTestClient.get().uri("/func/runtimeexception")
+        .exchange()
+        .expectStatus().is5xxServerError()
+        // 둘 다 가능
+        .expectBody()
+        .jsonPath("$.message", "RuntimeException Occurred");
+//        .expectBody(String.class)
+//        .isEqualTo("RuntimeException Occurred");
+  }
+
 }
