@@ -25,11 +25,11 @@ import reactor.core.publisher.Mono;
 public class ItemController {
 
   // 현재는 컨트롤러마다 달아줘야한다.
-  @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
-    log.error("Exception caught in handleRuntimeException : {} ", ex);
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-  }
+//  @ExceptionHandler(RuntimeException.class)
+//  public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+//    log.error("Exception caught in handleRuntimeException : {} ", ex);
+//    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+//  }
 
   @Autowired
   ItemReactiveRepository itemReactiveRepository;
