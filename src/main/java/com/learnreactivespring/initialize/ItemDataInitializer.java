@@ -1,12 +1,15 @@
 package com.learnreactivespring.initialize;
 
 import com.learnreactivespring.document.Item;
+import com.learnreactivespring.document.ItemCapped;
 import com.learnreactivespring.repository.ItemReactiveRepository;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.core.CollectionOptions;
+import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
@@ -17,9 +20,23 @@ public class ItemDataInitializer implements CommandLineRunner {
   @Autowired
   ItemReactiveRepository itemReactiveRepository;
 
+  /*
+  Change Bean name: MongoOperations => ReactiveMongoOperations
+  https://stackoverflow.com/a/62693120
+  */
+  @Autowired
+  ReactiveMongoOperations reactiveMongoOperations;
+
   @Override
   public void run(String... args) throws Exception {
     initialDataSetUp();
+    createCappedCollection();
+  }
+
+  private void createCappedCollection() {
+    reactiveMongoOperations.dropCollection(ItemCapped.class);
+    reactiveMongoOperations.createCollection(ItemCapped.class,
+        CollectionOptions.empty().maxDocuments(20).size(50000).capped());
   }
 
   public List<Item> data() {
