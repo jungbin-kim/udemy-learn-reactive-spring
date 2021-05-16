@@ -43,4 +43,11 @@ public class ItemHandler {
     );
   }
 
+  public Mono<ServerResponse> deleteItem(ServerRequest serverRequest) {
+    String id = serverRequest.pathVariable("id");
+    Mono<Void> deleteItem = itemReactiveRepository.deleteById(id);
+    return ServerResponse.ok()
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(deleteItem, Void.class);
+  }
 }
