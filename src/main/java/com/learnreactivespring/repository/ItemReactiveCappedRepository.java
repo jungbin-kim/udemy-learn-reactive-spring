@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 
 public interface ItemReactiveCappedRepository extends ReactiveMongoRepository<ItemCapped, String> {
 
+  // https://dalsacoo-log.tistory.com/entry/Spring-Data-MongoDB-Tailable-Cursors
   @Tailable
   Flux<ItemCapped> findItemsBy();
 }

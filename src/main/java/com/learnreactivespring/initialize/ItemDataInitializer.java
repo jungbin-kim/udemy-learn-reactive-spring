@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Component
 @Profile("!test")
@@ -42,9 +43,12 @@ public class ItemDataInitializer implements CommandLineRunner {
   }
 
   private void createCappedCollection() {
-    reactiveMongoOperations.dropCollection(ItemCapped.class);
-    reactiveMongoOperations.createCollection(ItemCapped.class,
-        CollectionOptions.empty().maxDocuments(20).size(50000).capped());
+    Mono.when(
+        reactiveMongoOperations.dropCollection(ItemCapped.class),
+        reactiveMongoOperations.createCollection(ItemCapped.class,
+            // maxDocuments 만큼 가지고 있다.
+            CollectionOptions.empty().maxDocuments(20).size(50000).capped())
+    ).subscribe();
   }
 
   public List<Item> data() {
@@ -59,6 +63,7 @@ public class ItemDataInitializer implements CommandLineRunner {
   private void dataSetUpForCappedCollection() {
     Flux<ItemCapped> itemCappedFlux = Flux.interval(Duration.ofSeconds(1))
         .map(i -> new ItemCapped(null, "Random Item " + i, (100.00 + i)));
+
     itemReactiveCappedRepository.insert(itemCappedFlux)
         .subscribe(itemCapped -> {
           log.info("Inserted Item is " + itemCapped);
