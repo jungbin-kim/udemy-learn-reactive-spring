@@ -29,10 +29,19 @@ public class ItemRouter {
             itemHandler::getOneItem)
         .andRoute(POST(ITEM_FUNCTIONAL_END_POINT_V1).and(accept(MediaType.APPLICATION_JSON)),
             itemHandler::createItem)
-        .andRoute(DELETE(ITEM_FUNCTIONAL_END_POINT_V1 + "/{id}").and(accept(MediaType.APPLICATION_JSON)),
+        .andRoute(
+            DELETE(ITEM_FUNCTIONAL_END_POINT_V1 + "/{id}").and(accept(MediaType.APPLICATION_JSON)),
             itemHandler::deleteItem)
-        .andRoute(PUT(ITEM_FUNCTIONAL_END_POINT_V1 + "/{id}").and(accept(MediaType.APPLICATION_JSON)),
+        .andRoute(
+            PUT(ITEM_FUNCTIONAL_END_POINT_V1 + "/{id}").and(accept(MediaType.APPLICATION_JSON)),
             itemHandler::updateItem);
   }
 
+  @Bean
+  public RouterFunction<ServerResponse> errorRoute(ItemHandler itemHandler) {
+    return RouterFunctions
+        .route(
+            GET("/func/runtimeexception").and(accept(MediaType.APPLICATION_JSON)),
+            itemHandler::itemsEx);
+  }
 }
