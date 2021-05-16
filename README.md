@@ -21,4 +21,5 @@ curl -X DELETE http://localhost:8081/client/deleteItem/ABC
 
 # Error
 curl http://localhost:8081/client/retrieve/error
+curl http://localhost:8081/client/exchange/error
 ```
