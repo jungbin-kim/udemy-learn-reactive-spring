@@ -43,12 +43,12 @@ public class ItemDataInitializer implements CommandLineRunner {
   }
 
   private void createCappedCollection() {
-    Mono.when(
-        reactiveMongoOperations.dropCollection(ItemCapped.class),
-        reactiveMongoOperations.createCollection(ItemCapped.class,
-            // maxDocuments 만큼 가지고 있다.
-            CollectionOptions.empty().maxDocuments(20).size(50000).capped())
-    ).subscribe();
+    reactiveMongoOperations.dropCollection(ItemCapped.class)
+        .block();
+    reactiveMongoOperations.createCollection(ItemCapped.class,
+        // maxDocuments 만큼 가지고 있다.
+        CollectionOptions.empty().maxDocuments(20).size(50000).capped())
+        .block();
   }
 
   public List<Item> data() {
